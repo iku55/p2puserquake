@@ -14,3 +14,6 @@ https://iku55.github.io/p2puserquake/
 - [JQuery Toast Plugin](https://github.com/kamranahmedse/jquery-toast-plugin) (メッセージの表示)
 - [Leaflet](https://leafletjs.com/) (地図の表示)
 - [P2P地震情報 JSON API v2](https://p2pquake.net/json_api_v2/) (データ取得)
+## ライセンス
+ソースコード・地図データはMITです  
+地図データだけの使用も歓迎します
