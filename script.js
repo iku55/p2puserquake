@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 iku55
+ * Copyright 2021-2022 iku55
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  * 
@@ -31,8 +31,7 @@ var reconnectingtoast;
 var connectws = () => {
     connection = new WebSocket("wss://api.p2pquake.net/v2/ws");
     connection.onopen = (e) => {
-        console.log("Websocket: Connected to p2pquake api websocket.");
-        console.log(e.data);
+        console.log("p2p地震情報 APIのwebsocketに接続しました");
         $.toast({
             heading: '接続完了',
             text: 'p2p地震情報のWebSocketに接続しました。',
@@ -52,13 +51,12 @@ var connectws = () => {
         });
     };
     connection.onmessage = (e) => {
-        console.log('Websocket: Message received');
-        console.log(JSON.parse(e.data));
+        console.log('メッセージを受信しました');
         ongetData(JSON.parse(e.data));
     }
     connection.onclose = () => {
         if (reconnectingtoast) {reconnectingtoast.close();}
-        console.log('Websocket: Connection closed');
+        console.log('websocketが切断されました');
         closecount++;
         if (closecount > 2) {
             $.toast({
@@ -98,12 +96,12 @@ Promise.all([setupMap])
 
 const ongetData = (data) => {
     if (!data) return;
-    console.log('OnMessage: '+p2ptypes[data.code]+'を受信しました。');
+    console.log(p2ptypes[data.code]+'を受信しました。');
     if (data.code === 9611 && Object.keys(data["area_confidences"]).length > 0) {
-        console.log('OnMessage: '+p2ptypes[data.code]+'を受信しました。描画処理を開始します。');
+        console.log('描画処理を開始します。');
         $('#count').text(data.count);
-        var started_at = new Date(data.started_at);
-        var updated_at = new Date(data.updated_at);
+        var started_at = new Date(data.started_at.split('.')[0]);
+        var updated_at = new Date(data.updated_at.split('.')[0]);
         $('#starttime').text(started_at.toLocaleTimeString());
         $('#endtime').text(updated_at.toLocaleTimeString());
         $('#persec').text(Math.round(((updated_at.getTime()-started_at.getTime())/1000)/data.count*100)/100);
@@ -113,7 +111,6 @@ const ongetData = (data) => {
 }
 
 const getAreaByDisplay = (display, data) => {
-    console.log(data);
     return Object.entries(data["area_confidences"]).filter(d=>d[1].display==display);
 }
 const getAreasText = (data) => {
@@ -121,42 +118,42 @@ const getAreasText = (data) => {
     if (getAreaByDisplay('A', data).length !== 0) {
         out = out + '<div class="area"><strong>信頼度A</strong>';
         for (const area of getAreaByDisplay('A', data)) {
-            out = out + " " + "<span>" + p2pareanames[area[0]] + '</span>';
+            out = out + " " + "<span>" + p2pareanames[area[0]] + '(' + area[1].count + ')</span>';
         }
         out = out + '</div>';
     }
     if (getAreaByDisplay('B', data).length !== 0) {
         out = out + '<div class="area"><strong>信頼度B</strong>';
         for (const area of getAreaByDisplay('B', data)) {
-            out = out + " " + "<span>" + p2pareanames[area[0]] + '</span>';
+            out = out + " " + "<span>" + p2pareanames[area[0]] + '(' + area[1].count + ')</span>';
         }
         out = out + '</div>';
     }
     if (getAreaByDisplay('C', data).length !== 0) {
         out = out + '<div class="area"><strong>信頼度C</strong>';
         for (const area of getAreaByDisplay('C', data)) {
-            out = out + " " + "<span>" + p2pareanames[area[0]] + '</span>';
+            out = out + " " + "<span>" + p2pareanames[area[0]] + '(' + area[1].count + ')</span>';
         }
         out = out + '</div>';
     }
     if (getAreaByDisplay('D', data).length !== 0) {
         out = out + '<div class="area"><strong>信頼度D</strong>';
         for (const area of getAreaByDisplay('D', data)) {
-            out = out + " " + "<span>" + p2pareanames[area[0]] + '</span>';
+            out = out + " " + "<span>" + p2pareanames[area[0]] + '(' + area[1].count + ')</span>';
         }
         out = out + '</div>';
     }
     if (getAreaByDisplay('E', data).length !== 0) {
         out = out + '<div class="area"><strong>信頼度E</strong>';
         for (const area of getAreaByDisplay('E', data)) {
-            out = out + " " + "<span>" + p2pareanames[area[0]] + '</span>';
+            out = out + " " + "<span>" + p2pareanames[area[0]] + '(' + area[1].count + ')</span>';
         }
         out = out + '</div>';
     }
     if (getAreaByDisplay('F', data).length !== 0) {
         out = out + '<div class="area"><strong>信頼度F</strong>';
         for (const area of getAreaByDisplay('F', data)) {
-            out = out + " " + "<span>" + p2pareanames[area[0]] + '</span>';
+            out = out + " " + "<span>" + p2pareanames[area[0]] + '(' + area[1].count + ')</span>';
         }
         out = out + '</div>';
     }
